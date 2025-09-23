@@ -102,12 +102,12 @@ app.get('/api/test', (req, res) => {
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/dist')));
 
-  app.get(/.*/, (req, res) => {
+  app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../client/dist/index.html'));
   });
 }
 
-// Enhanced 404 handler
+// FIXED: Proper 404 handler for API routes
 app.all('/api/*', (req, res) => {
   res.status(404).json({
     success: false,
@@ -121,6 +121,24 @@ app.all('/api/*', (req, res) => {
       '/api/test'
     ]
   });
+});
+
+// Catch-all handler for non-API routes (should come after static file serving)
+app.get('*', (req, res) => {
+  if (req.url.startsWith('/api')) {
+    // This should be caught by the /api/* handler above
+    res.status(404).json({
+      success: false,
+      error: 'API route not found'
+    });
+  } else {
+    // For non-API routes, serve the frontend or show 404
+    if (process.env.NODE_ENV === 'production') {
+      res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+    } else {
+      res.status(404).send('Route not found');
+    }
+  }
 });
 
 // Error handling middleware
