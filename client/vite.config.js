@@ -9,7 +9,8 @@ export default defineConfig({
     host: true, // allow external access
     allowedHosts: ['0db0c50f031d.ngrok-free.app'], // add your ngrok URL here
     proxy: {
-      '/api': 'https://ai-powered-social-media-scheduler-backend.onrender.com'
+      '/api': 'https://ai-powered-social-media-scheduler-backend.onrender.com',
+      '/auth': 'https://ai-powered-social-media-scheduler-backend.onrender.com'
     }
   }
 })
