@@ -29,15 +29,15 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-950 to-gray-900 px-6">
-      <div className="flex w-full max-w-6xl h-[680px] rounded-3xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.8)] backdrop-blur-2xl bg-[#0a0a0f]/95 border border-gray-800">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-black via-gray-950 to-gray-900 px-4 sm:px-6 py-8">
+      <div className="flex flex-col lg:flex-row w-full max-w-[900px] lg:h-[680px] rounded-3xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.8)] backdrop-blur-2xl bg-[#0a0a0f]/95 border border-gray-800">
         
         {/* Left Section (Branding with Typing Effect) */}
-        <div className="w-1/2 bg-[#05070f] flex items-center justify-center relative rounded-l-3xl">
+        <div className="lg:w-[40%] w-full bg-[#05070f] flex items-center justify-center relative lg:rounded-l-3xl lg:rounded-t-none rounded-t-3xl min-h-[300px] lg:min-h-auto">
           {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 to-blue-800/10 rounded-l-3xl" />
-          <div className="relative text-center px-6">
-            <h1 className="text-5xl font-extrabold text-white mb-6 leading-snug drop-shadow-xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 to-blue-800/10 lg:rounded-l-3xl lg:rounded-t-none rounded-t-3xl" />
+          <div className="relative text-center px-6 py-8 lg:py-0">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-4 lg:mb-6 leading-snug drop-shadow-xl">
               <TypeAnimation
                 sequence={[
                   'AI-powered',
@@ -54,101 +54,103 @@ const Login = () => {
                 repeat={Infinity}
               />
             </h1>
-            <p className="mt-4 text-gray-400 tracking-wide text-lg font-medium">
+            <p className="text-gray-400 tracking-wide text-base sm:text-lg font-medium px-2">
               Create, schedule, and publish your content seamlessly with AI.
             </p>
           </div>
         </div>
 
         {/* Right Section (Login Form) */}
-        <div className="w-1/2 bg-[#0d111a]/95 p-14 flex flex-col justify-center backdrop-blur-md rounded-r-3xl">
-          <h2 className="text-3xl font-bold text-white mb-3">Welcome Back 👋</h2>
-          <p className="text-sm text-gray-500 mb-10">
-            Login to continue and explore the future of social media.
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="bg-red-500/10 border border-red-600 text-red-400 px-4 py-3 rounded-lg">
-                {error}
-              </div>
-            )}
-
-            <div>
-              <input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-[#1a1f2e]/90 border border-gray-700 rounded-xl px-4 py-4 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all duration-300"
-                placeholder="Email Address"
-              />
-            </div>
-
-            <div>
-              <input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-[#1a1f2e]/90 border border-gray-700 rounded-xl px-4 py-4 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all duration-300"
-                placeholder="Password"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-indigo-600/40 transition-all duration-300"
-            >
-              {loading ? 'Signing in...' : 'Login'}
-            </button>
-
-            <p className="text-sm text-gray-500 text-center">
-              Don’t have an account?{' '}
-              <Link
-                to="/signup"
-                className="text-blue-400 hover:text-blue-300 font-medium"
-              >
-                Register
-              </Link>
+        <div className="lg:w-[60%] w-full bg-[#0d111a]/95 p-6 sm:p-8 lg:p-12 flex flex-col justify-center backdrop-blur-md lg:rounded-r-3xl lg:rounded-b-none rounded-b-3xl">
+          <div className="w-full max-w-[400px] mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">Welcome Back 👋</h2>
+            <p className="text-sm text-gray-500 mb-8 sm:mb-10">
+              Login to continue and explore the future of social media.
             </p>
-          </form>
 
-          {/* Social Login */}
-          <div className="mt-12">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-700/60" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-3 bg-[#0d111a]/95 text-gray-500">
-                  Or continue with
-                </span>
-              </div>
-            </div>
+            <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+              {error && (
+                <div className="bg-red-500/10 border border-red-600 text-red-400 px-4 py-3 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
 
-            <div className="mt-6 grid grid-cols-3 gap-4">
-              <a
-                href="/api/auth/twitter"
-                className="bg-[#1a1f2e]/90 hover:bg-[#242a3a] text-gray-200 py-3 px-4 rounded-xl flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-blue-600/30"
+              <div>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-[#1a1f2e]/90 border border-gray-700 rounded-xl px-4 py-3 sm:py-4 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all duration-300 text-sm sm:text-base"
+                  placeholder="Email Address"
+                />
+              </div>
+
+              <div>
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-[#1a1f2e]/90 border border-gray-700 rounded-xl px-4 py-3 sm:py-4 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all duration-300 text-sm sm:text-base"
+                  placeholder="Password"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-blue-700 to-indigo-700 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-indigo-600/40 transition-all duration-300 text-sm sm:text-base"
               >
-                Twitter
-              </a>
-              <a
-                href="/api/auth/linkedin"
-                className="bg-[#1a1f2e]/90 hover:bg-[#242a3a] text-gray-200 py-3 px-4 rounded-xl flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-blue-600/30"
-              >
-                LinkedIn
-              </a>
-              <a
-                href="/api/auth/instagram"
-                className="bg-[#1a1f2e]/90 hover:bg-[#242a3a] text-gray-200 py-3 px-4 rounded-xl flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-blue-600/30"
-              >
-                Instagram
-              </a>
+                {loading ? 'Signing in...' : 'Login'}
+              </button>
+
+              <p className="text-sm text-gray-500 text-center">
+                Don't have an account?{' '}
+                <Link
+                  to="/signup"
+                  className="text-blue-400 hover:text-blue-300 font-medium"
+                >
+                  Register
+                </Link>
+              </p>
+            </form>
+
+            {/* Social Login */}
+            <div className="mt-10 sm:mt-12">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-700/60" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-3 bg-[#0d111a]/95 text-gray-500 text-xs sm:text-sm">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-6 grid grid-cols-3 gap-3 sm:gap-4">
+                <a
+                  href="/api/auth/twitter"
+                  className="bg-[#1a1f2e]/90 hover:bg-[#242a3a] text-gray-200 py-2 sm:py-3 px-3 sm:px-4 rounded-xl flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-blue-600/30 text-xs sm:text-sm"
+                >
+                  Twitter
+                </a>
+                <a
+                  href="/api/auth/linkedin"
+                  className="bg-[#1a1f2e]/90 hover:bg-[#242a3a] text-gray-200 py-2 sm:py-3 px-3 sm:px-4 rounded-xl flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-blue-600/30 text-xs sm:text-sm"
+                >
+                  LinkedIn
+                </a>
+                <a
+                  href="/api/auth/instagram"
+                  className="bg-[#1a1f2e]/90 hover:bg-[#242a3a] text-gray-200 py-2 sm:py-3 px-3 sm:px-4 rounded-xl flex items-center justify-center transition-all duration-300 shadow-md hover:shadow-blue-600/30 text-xs sm:text-sm"
+                >
+                  Instagram
+                </a>
+              </div>
             </div>
           </div>
         </div>
