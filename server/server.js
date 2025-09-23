@@ -4,7 +4,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const passport = require('passport');
 const path = require('path');
-const session = require('express-session'); // Add this
+const session = require('express-session');
+const MongoStore = require('connect-mongo'); // ✅ Better session store
 
 // Load env vars
 dotenv.config();
@@ -30,13 +31,17 @@ const app = express();
 // Connect to database
 connectDB();
 
-// Session configuration
+// Session configuration (use MongoDB store in production)
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key', 
+  secret: process.env.SESSION_SECRET || 'your-secret-key',
   resave: false,
   saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI, // must be set in your .env
+    collectionName: 'sessions'
+  }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    secure: process.env.NODE_ENV === 'production', // secure cookies in production
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
@@ -49,7 +54,7 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
-app.use(passport.session()); // Add this line too
+app.use(passport.session());
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -59,8 +64,8 @@ app.use('/api/chatbot', chatbotRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'OK', 
+  res.status(200).json({
+    status: 'OK',
     message: 'Server is running',
     timestamp: new Date().toISOString()
   });
@@ -69,8 +74,9 @@ app.get('/api/health', (req, res) => {
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/dist')));
-  
-  app.get('/*', (req, res) => {
+
+  // ✅ Fix: use "*" instead of "/*"
+  app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../client/dist/index.html'));
   });
 }
@@ -89,6 +95,6 @@ app.all(/^\/api\/.*/, (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
