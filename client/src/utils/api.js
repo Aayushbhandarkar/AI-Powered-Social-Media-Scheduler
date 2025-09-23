@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-// Direct URL - remove environment detection to avoid issues
+// Use direct URL - no environment detection
 const API_BASE_URL = 'https://ai-powered-social-media-scheduler-backend.onrender.com/api'
 
 const api = axios.create({
@@ -18,9 +18,7 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
-    
-    // Log request for debugging
-    console.log(`API Request: ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`)
+    console.log('Making API request to:', config.url)
     return config
   },
   (error) => {
@@ -28,42 +26,24 @@ api.interceptors.request.use(
   }
 )
 
-// Handle responses and errors
+// Handle responses
 api.interceptors.response.use(
-  (response) => {
-    console.log(`API Response: ${response.status} ${response.config.url}`)
-    return response
-  },
+  (response) => response,
   (error) => {
-    console.error('API Error:', error.response?.status, error.config?.url, error.message)
+    console.error('API Error:', error.message)
+    console.error('Full error:', error)
     
     if (error.response?.status === 401) {
       localStorage.removeItem('token')
       window.location.href = '/login'
     }
     
-    if (!error.response) {
-      console.error('Network error - Backend might be unavailable')
-      // Show user-friendly error message
-      alert('Cannot connect to server. Please check your connection and try again.')
+    if (error.code === 'NETWORK_ERROR' || !error.response) {
+      console.error('Cannot connect to backend at:', API_BASE_URL)
     }
     
     return Promise.reject(error)
   }
 )
-
-// Test backend connection
-export const testBackendConnection = async () => {
-  try {
-    const response = await api.get('/health')
-    return { success: true, data: response.data }
-  } catch (error) {
-    return { 
-      success: false, 
-      error: `Cannot connect to backend at ${API_BASE_URL}`,
-      details: error.message 
-    }
-  }
-}
 
 export default api
