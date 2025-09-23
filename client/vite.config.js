@@ -1,4 +1,4 @@
-import { defineConfig } from 'vite'  // ✅ Add this import
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -21,10 +21,9 @@ export default defineConfig({
       }
     }
   },
-  // Optional: Build optimization
   build: {
     outDir: 'dist',
-    sourcemap: false,
-    minify: 'terser'
+    sourcemap: false
+    // Remove minify: 'terser' - Vite uses esbuild by default which is faster
   }
 })
