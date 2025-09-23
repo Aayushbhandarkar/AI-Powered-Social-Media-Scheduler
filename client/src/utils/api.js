@@ -1,38 +1,30 @@
-import axios from 'axios'
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
-
-const api = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+  server: {
+    host: true,
+    // Proxy only in development
+    proxy: {
+      '/api': {
+        target: 'https://ai-powered-social-media-scheduler-backend.onrender.com',
+        changeOrigin: true,
+        secure: false
+      },
+      '/auth': {
+        target: 'https://ai-powered-social-media-scheduler-backend.onrender.com',
+        changeOrigin: true,
+        secure: false
+      }
+    }
   },
+  // Optional: Build optimization
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    minify: 'terser'
+  }
 })
-
-// Add token to requests
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
-
-// Handle token expiration
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      window.location.href = '/login'
-    }
-    return Promise.reject(error)
-  }
-)
-
-export default api
