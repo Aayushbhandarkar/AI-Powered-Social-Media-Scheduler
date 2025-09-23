@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 const passport = require('passport');
 const path = require('path');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
+const MongoStore = require('connect-mongo'); // ✅ Better session store
 
 // Load env vars
 dotenv.config();
@@ -31,27 +31,28 @@ const app = express();
 // Connect to database
 connectDB();
 
-// CORS
-app.use(cors({
-  origin: [
-    'https://ai-powered-social-media-scheduler.onrender.com',
-    'http://localhost:5173',
-    'http://localhost:3000'
-  ],
-  credentials: true
-}));
-
-// Session
+// Session configuration (use MongoDB store in production)
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your-secret-key',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-  cookie: { secure: process.env.NODE_ENV === 'production', maxAge: 24 * 60 * 60 * 1000 }
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI, // must be set in your .env
+    collectionName: 'sessions'
+  }),
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // secure cookies in production
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
 }));
 
 // Middleware
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
+}));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -61,30 +62,39 @@ app.use('/api/posts', postRoutes);
 app.use('/api/social', socialRoutes);
 app.use('/api/chatbot', chatbotRoutes);
 
-// Health check
+// Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Server is running' });
+  res.status(200).json({
+    status: 'OK',
+    message: 'Server is running',
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/dist')));
-  // Only serve index.html for non-API routes
-  app.get(/^(?!\/api).*/, (req, res) => {
+
+  // ✅ Express 5 compatible wildcard for React routing
+  app.get(/.*/, (req, res) => {
     res.sendFile(path.join(__dirname, '../client/dist/index.html'));
   });
 }
 
-// 404 handler for API routes
-app.use('/api/*', (req, res) => {
-  res.status(404).json({ error: 'API route not found' });
-});
-
-// Error handler
+// Error handling middleware
 app.use(errorHandler);
+
+// Handle 404 for API routes (Express v5 compatible)
+app.all(/^\/api\/.*/, (req, res) => {
+  res.status(404).json({
+    success: false,
+    error: 'API route not found'
+  });
+});
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
