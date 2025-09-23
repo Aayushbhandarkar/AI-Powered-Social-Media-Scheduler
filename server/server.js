@@ -75,12 +75,11 @@ app.get('/api/health', (req, res) => {
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/dist')));
 
-  // Fix: Express 5 / path-to-regexp v6 compatible wildcard
-  app.get('/:path(.*)', (req, res) => {
+  // ✅ Express 5 compatible wildcard for React routing
+  app.get(/.*/, (req, res) => {
     res.sendFile(path.join(__dirname, '../client/dist/index.html'));
   });
 }
-
 
 // Error handling middleware
 app.use(errorHandler);
