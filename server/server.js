@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 const passport = require('passport');
 const path = require('path');
 const session = require('express-session');
-const MongoStore = require('connect-mongo'); // ✅ Better session store
+const MongoStore = require('connect-mongo');
 
 // Load env vars
 dotenv.config();
@@ -31,24 +31,24 @@ const app = express();
 // Connect to database
 connectDB();
 
-// Session configuration (use MongoDB store in production)
+// Session configuration
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your-secret-key',
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI, // must be set in your .env
+    mongoUrl: process.env.MONGO_URI,
     collectionName: 'sessions'
   }),
   cookie: {
-    secure: process.env.NODE_ENV === 'production', // secure cookies in production
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000
   }
 }));
 
-// Middleware
+// Middleware - FIXED CORS for your frontend
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: 'https://ai-powered-social-media-scheduler.onrender.com' || 'http://localhost:5173',
   credentials: true
 }));
 app.use(express.json());
@@ -71,12 +71,12 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Serve static files in production
+// Serve static files in production - FIXED: Use string path instead of regex
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/dist')));
-
-  // ✅ Express 5 compatible wildcard for React routing
-  app.get(/.*/, (req, res) => {
+  
+  // FIXED: Use string path instead of regex
+  app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../client/dist/index.html'));
   });
 }
@@ -84,8 +84,8 @@ if (process.env.NODE_ENV === 'production') {
 // Error handling middleware
 app.use(errorHandler);
 
-// Handle 404 for API routes (Express v5 compatible)
-app.all(/^\/api\/.*/, (req, res) => {
+// Handle 404 for API routes - FIXED: Remove problematic regex
+app.use('/api/*', (req, res) => {
   res.status(404).json({
     success: false,
     error: 'API route not found'
@@ -94,7 +94,7 @@ app.all(/^\/api\/.*/, (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`✅ Server running on port ${PORT}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
 });
