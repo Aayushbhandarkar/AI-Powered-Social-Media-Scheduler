@@ -48,7 +48,7 @@ app.use(session({
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL || 'https://ai-powered-social-media-scheduler.onrender.com',
   credentials: true
 }));
 app.use(express.json());
