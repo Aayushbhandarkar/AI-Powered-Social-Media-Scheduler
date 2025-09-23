@@ -98,48 +98,35 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// Serve static files in production
+// Serve static files in production - FIXED: Use proper Express static serving
 if (process.env.NODE_ENV === 'production') {
+  // Serve static files from the dist directory
   app.use(express.static(path.join(__dirname, '../client/dist')));
-
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-  });
 }
 
-// FIXED: Proper 404 handler for API routes
-app.all('/api/*', (req, res) => {
+// Simple 404 handler for API routes - FIXED: Use app.use instead of app.all with wildcards
+app.use('/api', (req, res) => {
   res.status(404).json({
     success: false,
-    error: `API route not found: ${req.method} ${req.originalUrl}`,
-    availableRoutes: [
-      '/api/auth/*',
-      '/api/posts/*',
-      '/api/social/*',
-      '/api/chatbot/*',
-      '/api/health',
-      '/api/test'
-    ]
+    error: `API route not found: ${req.method} ${req.originalUrl}`
   });
 });
 
-// Catch-all handler for non-API routes (should come after static file serving)
-app.get('*', (req, res) => {
-  if (req.url.startsWith('/api')) {
-    // This should be caught by the /api/* handler above
+// Catch-all route for React routing - FIXED: Use proper Express 4/5 syntax
+if (process.env.NODE_ENV === 'production') {
+  app.get('/*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+  });
+} else {
+  // Development 404 handler
+  app.use((req, res) => {
     res.status(404).json({
       success: false,
-      error: 'API route not found'
+      error: 'Route not found',
+      path: req.originalUrl
     });
-  } else {
-    // For non-API routes, serve the frontend or show 404
-    if (process.env.NODE_ENV === 'production') {
-      res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-    } else {
-      res.status(404).send('Route not found');
-    }
-  }
-});
+  });
+}
 
 // Error handling middleware
 app.use(errorHandler);
