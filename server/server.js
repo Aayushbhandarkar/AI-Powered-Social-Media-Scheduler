@@ -46,7 +46,7 @@ app.use(session({
   }
 }));
 
-// Middleware - FIXED CORS for your frontend
+// Middleware
 app.use(cors({
   origin: 'https://ai-powered-social-media-scheduler.onrender.com' || 'http://localhost:5173',
   credentials: true
@@ -71,12 +71,12 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Serve static files in production - FIXED: Use string path instead of regex
+// Serve static files in production - COMPLETELY REMOVED PROBLEMATIC ROUTES
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/dist')));
   
-  // FIXED: Use string path instead of regex
-  app.get('*', (req, res) => {
+  // SIMPLE CATCH-ALL THAT WORKS: Serve index.html for any GET request that's not an API route
+  app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../client/dist/index.html'));
   });
 }
@@ -84,12 +84,19 @@ if (process.env.NODE_ENV === 'production') {
 // Error handling middleware
 app.use(errorHandler);
 
-// Handle 404 for API routes - FIXED: Remove problematic regex
-app.use('/api/*', (req, res) => {
-  res.status(404).json({
-    success: false,
-    error: 'API route not found'
-  });
+// SIMPLE 404 handler that works
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    res.status(404).json({
+      success: false,
+      error: 'API route not found'
+    });
+  } else if (process.env.NODE_ENV === 'production') {
+    // For non-API routes in production, serve the React app
+    res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+  } else {
+    res.status(404).send('Route not found');
+  }
 });
 
 const PORT = process.env.PORT || 5000;
