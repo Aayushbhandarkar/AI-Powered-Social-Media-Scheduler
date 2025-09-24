@@ -89,7 +89,7 @@ Google AI Studio account (for Gemini API)
 
 1. Clone the Repository
 bash
-git clone https://github.com/yourusername/ai-social-media-scheduler.git
+git clone [https://github.com/yourusername/ai-social-media-scheduler.git](https://github.com/Aayushbhandarkar/AI-Powered-Social-Media-Scheduler.git)
 cd ai-social-media-scheduler
 2. Install Dependencies
 bash
