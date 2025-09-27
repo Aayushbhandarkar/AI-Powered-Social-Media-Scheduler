@@ -1,6 +1,5 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-// Initialize Gemini AI only if API key exists
 let genAI;
 try {
   if (!process.env.GEMINI_API_KEY) {
