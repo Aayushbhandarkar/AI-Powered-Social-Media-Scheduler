@@ -131,6 +131,7 @@ const healthCheck = async (req, res) => {
         error: 'GEMINI_API_KEY not set' 
       });
     }
+    
 
     // Test Gemini API with a simple request
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
